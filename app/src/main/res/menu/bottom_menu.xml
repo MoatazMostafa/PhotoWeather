@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/homeFragment"
+        android:title="@string/home"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_home"/>
+    <item
+        android:id="@+id/placeholder"
+        android:title=""
+        android:enabled="false"/>
+    <item
+        android:id="@+id/servicesFragment"
+        android:title="@string/my_photos"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_services"/>
+
+</menu>

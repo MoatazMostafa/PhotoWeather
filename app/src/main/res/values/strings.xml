@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">PhotoWeather</string>
+    <string name="home">Home</string>
+    <string name="my_photos">My Photos</string>
+    <string name="click_to_take_photo">Click to take photo</string>
+    <string name="temperature">Temperature in °C</string>
+    <string name="white">White</string>
+    <string name="black">Black</string>
+    <string name="place">Place</string>
+    <string name="weather_condition">Weather Condition,</string>
+    <string name="feel">Feel</string>
+</resources>
