@@ -2,6 +2,7 @@ package com.moataz.photoweather.viewModels
 
 import android.app.Application
 import android.content.Context
+import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.location.LocationListener
 import android.location.LocationManager
@@ -14,6 +15,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.moataz.photoweather.api.NetworkRepository
 import com.moataz.photoweather.databinding.CompPhotoDataBinding
 import com.moataz.photoweather.models.CurrentWeather
@@ -22,10 +24,11 @@ import com.moataz.photoweather.utils.Constants.FILE_NAME
 import com.moataz.photoweather.utils.PhotoData
 import com.moataz.photoweather.utils.ViewUtils.drawText
 import com.moataz.photoweather.utils.ViewUtils.setPhotoDataView
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.util.*
 
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application)  {
@@ -54,7 +57,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
     }
 
     fun getCurrentWeather() {
-        MainScope().launch {
+        viewModelScope.launch {
             networkRepository.getCurrentWeather(lat, lon) { currentWeather, errorMsg ->
                 if(currentWeather!=null) {
                     _currentWeather.value = currentWeather
@@ -84,7 +87,6 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
     fun getShareUri(context: Context): Uri? {
         var uri: Uri? = null
         try {
-            filePhoto.mkdirs()
             val outputStream = FileOutputStream(filePhoto.absoluteFile)
             finalImage.value?.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
             outputStream.flush()
@@ -92,6 +94,25 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
             uri = FileProvider.getUriForFile(context, "com.moataz.photoweather.file_provider", filePhoto)
         } catch (_: Exception) { }
         return uri
+    }
+
+    fun saveImage(){
+        val cw = ContextWrapper(app.applicationContext)
+        val directory = cw.getDir("WeatherPhotos", Context.MODE_PRIVATE)
+        val file = File(directory, "${UUID.randomUUID()}.jpg")
+        if (!file.exists()) {
+            Log.d("path", file.toString())
+            val fos: FileOutputStream?
+            try {
+                fos = FileOutputStream(file)
+                finalImage.value?.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                fos.flush()
+                fos.close()
+                Toast.makeText(app,"Photo Saved",Toast.LENGTH_LONG).show()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 
     //Location

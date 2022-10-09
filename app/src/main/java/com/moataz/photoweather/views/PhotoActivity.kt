@@ -13,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
-import coil.load
 import com.moataz.photoweather.R
 import com.moataz.photoweather.databinding.ActivityPhotoBinding
 import com.moataz.photoweather.utils.ViewUtils.disablePhotoDataView
@@ -53,6 +52,12 @@ class PhotoActivity : AppCompatActivity() {
             }
         }
 
+        binding.photoActionBar.saveImageView.setOnClickListener{
+            if(viewModel.finalImage.value!=null) {
+                storageRequestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
+
     }
 
     private fun setDataFields() {
@@ -78,7 +83,7 @@ class PhotoActivity : AppCompatActivity() {
     }
 
     private fun setImageView(){
-        binding.capturedPhotoImageView.load(viewModel.finalImage.value)
+        binding.capturedPhotoImageView.setImageBitmap(viewModel.finalImage.value)
         binding.capturedPhotoImageView.scaleType = ImageView.ScaleType.FIT_XY
     }
 
@@ -94,6 +99,12 @@ class PhotoActivity : AppCompatActivity() {
         if (isGranted) {
             viewModel.locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
             viewModel.getLocation()
+        }
+    }
+
+    private val storageRequestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            viewModel.saveImage()
         }
     }
 
