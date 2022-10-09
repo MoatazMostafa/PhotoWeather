@@ -2,7 +2,7 @@ package com.moataz.photoweather.views
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.*
+import android.graphics.BitmapFactory
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.MediaStore
@@ -43,7 +43,15 @@ class PhotoActivity : AppCompatActivity() {
         binding.photoActionBar.backImageView.setOnClickListener{
             this.finish()
         }
-        binding.photoActionBar.shareImageView
+        binding.photoActionBar.shareImageView.setOnClickListener {
+            if(viewModel.finalImage.value!=null) {
+                val uri = viewModel.getShareUri(this)
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.putExtra(Intent.EXTRA_STREAM, uri)
+                intent.type = "image/jpg"
+                startActivity(Intent.createChooser(intent, "Share By"))
+            }
+        }
 
     }
 
