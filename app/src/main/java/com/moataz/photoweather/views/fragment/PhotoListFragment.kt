@@ -26,11 +26,18 @@ class PhotoListFragment : Fragment() {
         val view = binding.root
         viewModel.getPhotoListFromFolder()
         viewModel.photoList.observe(requireActivity()){ list ->
-            binding.photoListRecyclerView.layoutManager = GridLayoutManager(context, 2)
-            binding.photoListRecyclerView.adapter = PhotosAdapter(list) { file ->
-                val intent = Intent(requireContext(), FullImageActivity::class.java)
-                intent.putExtra("PhotoFile",file.absolutePath)
-                startActivity(intent)
+            if(list.isEmpty()){
+                binding.emptyListImageView.visibility = View.VISIBLE
+                binding.photoListRecyclerView.visibility = View.GONE
+            }else {
+                binding.emptyListImageView.visibility = View.GONE
+                binding.photoListRecyclerView.visibility = View.VISIBLE
+                binding.photoListRecyclerView.layoutManager = GridLayoutManager(context, 2)
+                binding.photoListRecyclerView.adapter = PhotosAdapter(list) { file ->
+                    val intent = Intent(requireContext(), FullImageActivity::class.java)
+                    intent.putExtra("PhotoFile", file.absolutePath)
+                    startActivity(intent)
+                }
             }
         }
 

@@ -79,7 +79,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
             photoDataList[i].text = text
             photoDataList[i].color = color
             photoDataList[i].align = align
-            finalImage.value = drawText(capturedImage.value!!, photoDataList)
+            if(capturedImage.value!=null)
+                finalImage.value = drawText(capturedImage.value!!, photoDataList)
         }
     }
 

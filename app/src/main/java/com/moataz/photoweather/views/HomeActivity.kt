@@ -41,7 +41,6 @@ class HomeActivity : AppCompatActivity() {
     private  fun loadFragment(fragment: Fragment){
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(binding.container.id,fragment)
-        transaction.addToBackStack(null)
         transaction.commit()
     }
 }

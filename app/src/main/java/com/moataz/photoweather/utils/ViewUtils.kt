@@ -67,7 +67,6 @@ object ViewUtils {
             val matrix = Matrix()
             when (orientation) {
                 6 -> matrix.postRotate(90f)
-                3 -> matrix.postRotate(180f)
                 8 -> matrix.postRotate(270f)
             }
             newBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
