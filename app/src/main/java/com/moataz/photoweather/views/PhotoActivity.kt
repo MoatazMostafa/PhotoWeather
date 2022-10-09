@@ -15,9 +15,9 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import com.moataz.photoweather.R
 import com.moataz.photoweather.databinding.ActivityPhotoBinding
+import com.moataz.photoweather.utils.Constants.FILE_PROVIDER_PATH
 import com.moataz.photoweather.utils.ViewUtils.disablePhotoDataView
 import com.moataz.photoweather.utils.ViewUtils.enablePhotoDataView
-import com.moataz.photoweather.utils.ViewUtils.setImageOrientation
 import com.moataz.photoweather.viewModels.PhotoViewModel
 
 class PhotoActivity : AppCompatActivity() {
@@ -87,13 +87,7 @@ class PhotoActivity : AppCompatActivity() {
         binding.capturedPhotoImageView.scaleType = ImageView.ScaleType.FIT_XY
     }
 
-    private val cameraRequestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            viewModel.uri = FileProvider.getUriForFile(this, "com.moataz.photoweather.file_provider", viewModel.filePhoto)
-            val takePhotoIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, viewModel.uri)
-            camera.launch(takePhotoIntent)
-        }
-    }
+
 
     private val locationRequestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if (isGranted) {
@@ -107,15 +101,20 @@ class PhotoActivity : AppCompatActivity() {
             viewModel.saveImage()
         }
     }
+    private val cameraRequestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            viewModel.uri = FileProvider.getUriForFile(this, FILE_PROVIDER_PATH, viewModel.filePhoto)
+            val takePhotoIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, viewModel.uri)
+            camera.launch(takePhotoIntent)
+        }
+    }
 
     private val camera = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             binding.photoFrameView.isEnabled = false
             binding.clickToTakePhotoTV.visibility = View.GONE
-            val bitmap = BitmapFactory.decodeFile(viewModel.filePhoto.absolutePath)
-            viewModel.capturedImage = setImageOrientation(bitmap, viewModel.filePhoto.absolutePath)?:bitmap
-            viewModel.finalImage.value = viewModel.capturedImage
-            viewModel.getCurrentWeather()
+            viewModel.setCapturedImage()
+
         }
     }
 

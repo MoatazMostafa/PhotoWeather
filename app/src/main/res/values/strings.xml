@@ -9,4 +9,7 @@
     <string name="place">Place</string>
     <string name="weather_condition">Weather Condition,</string>
     <string name="feel">Describe your feelings</string>
+
+    <string name="welcome_to_photo_weather">Welcome to PhotoWeather</string>
+    <string name="weather_in_your_story">Weather in your Story</string>
 </resources>

@@ -76,7 +76,7 @@ object ViewUtils {
     }
 
     fun drawText(bitmap:Bitmap, photoDataList:ArrayList<PhotoData>): Bitmap{
-        val tmpBitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true);
+        val tmpBitmap = bitmap.copy(Bitmap.Config.ARGB_8888,true)
         val canvas = Canvas(tmpBitmap)
         var y = canvas.height - 200f
 

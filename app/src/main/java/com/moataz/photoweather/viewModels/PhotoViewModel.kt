@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
@@ -21,7 +22,9 @@ import com.moataz.photoweather.databinding.CompPhotoDataBinding
 import com.moataz.photoweather.models.CurrentWeather
 import com.moataz.photoweather.utils.Constants.ALIGN_LEFT
 import com.moataz.photoweather.utils.Constants.FILE_NAME
+import com.moataz.photoweather.utils.Constants.FILE_PROVIDER_PATH
 import com.moataz.photoweather.utils.PhotoData
+import com.moataz.photoweather.utils.ViewUtils
 import com.moataz.photoweather.utils.ViewUtils.drawText
 import com.moataz.photoweather.utils.ViewUtils.setPhotoDataView
 import kotlinx.coroutines.launch
@@ -41,7 +44,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
     private var photoDataList = ArrayList<PhotoData>()
 
     lateinit var filePhoto: File
-    lateinit var capturedImage:Bitmap
+    var capturedImage:MutableLiveData<Bitmap>
     var finalImage:MutableLiveData<Bitmap>
 
     var locationManager: LocationManager? = null
@@ -54,6 +57,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
     init {
         setPhotoFile()
         finalImage = MutableLiveData()
+        capturedImage = MutableLiveData()
     }
 
     fun getCurrentWeather() {
@@ -75,7 +79,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
             photoDataList[i].text = text
             photoDataList[i].color = color
             photoDataList[i].align = align
-            finalImage.value = drawText(capturedImage, photoDataList)
+            finalImage.value = drawText(capturedImage.value!!, photoDataList)
         }
     }
 
@@ -91,7 +95,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
             finalImage.value?.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
             outputStream.flush()
             outputStream.close()
-            uri = FileProvider.getUriForFile(context, "com.moataz.photoweather.file_provider", filePhoto)
+            uri = FileProvider.getUriForFile(context, FILE_PROVIDER_PATH, filePhoto)
         } catch (_: Exception) { }
         return uri
     }
@@ -101,7 +105,6 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
         val directory = cw.getDir("WeatherPhotos", Context.MODE_PRIVATE)
         val file = File(directory, "${UUID.randomUUID()}.jpg")
         if (!file.exists()) {
-            Log.d("path", file.toString())
             val fos: FileOutputStream?
             try {
                 fos = FileOutputStream(file)
@@ -109,9 +112,7 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
                 fos.flush()
                 fos.close()
                 Toast.makeText(app,"Photo Saved",Toast.LENGTH_LONG).show()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
+            } catch (_: IOException) { }
         }
     }
 
@@ -122,6 +123,13 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application)  
         } catch (ex: SecurityException) {
             Log.d("myTag", "Security Exception, no location available")
         }
+    }
+
+    fun setCapturedImage() {
+        val bitmap = BitmapFactory.decodeFile(filePhoto.absolutePath)
+        capturedImage.value = ViewUtils.setImageOrientation(bitmap, filePhoto.absolutePath) ?:bitmap
+        finalImage.value = capturedImage.value
+        getCurrentWeather()
     }
 
     private val locationListener: LocationListener = LocationListener { location ->

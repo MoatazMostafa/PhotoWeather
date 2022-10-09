@@ -11,7 +11,7 @@
         android:title=""
         android:enabled="false"/>
     <item
-        android:id="@+id/servicesFragment"
+        android:id="@+id/photoListFragment"
         android:title="@string/my_photos"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_services"/>

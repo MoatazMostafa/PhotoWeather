@@ -18,13 +18,12 @@ class MainActivity : AppCompatActivity() {
         MainScope().launch {
             toHome()
         }
-
     }
 
     private suspend fun toHome() {
         delay(2000)
         startActivity(Intent(applicationContext, HomeActivity::class.java))
-        finishAffinity()
+        finish()
     }
 
 }
